@@ -1,0 +1,158 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100&display=swap');
+
+*{
+    font-family: "Poppins", sans-serif;
+}
+
+:root
+{
+    --background-color: #778DA9;
+    --background-light-color: #E0E1DD;
+    --button-color: #415A77;
+    --button-border-color: #1B263B;
+    --font-color: #0D1B2A;
+}
+
+body {
+    padding: 20px;
+    background-color: var(--background-color);
+}
+
+.container {
+    display: grid;
+}
+
+.container .chart-cont {
+    margin: 0px 10px;
+    min-width: 100vh;
+    min-height: 80vh;
+    overflow: auto;
+}
+
+.container .active-cont {
+    margin: 0px 10px;
+    border: 1px solid black;
+    border-radius: 10px;
+    min-width: 100vh;
+    min-height: 80vh;
+    overflow: auto;
+}
+
+.container .inputs .textbox {
+    min-width: 30px;
+    max-width: 300px;
+    border: 1px solid grey;
+    border-radius: 5px;
+}
+
+.container .inputs label {
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--font-color);
+}
+
+header {
+    margin: 10px;
+    padding-left: 10px;
+    border: 1px solid black;
+    border-radius: 10px;
+    background-color: var(--background-light-color);
+}
+
+header h1{
+    color: var(--font-color);
+}
+
+.container .inputs-btn{
+    background-color: var(--background-light-color);
+    margin: 0px 10px 10px 10px;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid black;
+    border-radius: 10px;
+}
+
+.container .inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    padding: 10px;
+}
+
+.container .inputs .name,.office,.begin,.end {
+    display: flex;
+    flex-direction: column;
+}
+
+.container .btn-container {
+    display: flex;
+    gap: 100px;
+    padding: 0px 0px 10px 0px;
+    align-items: center;
+    justify-content: center;
+}
+
+.container .btn-container #reportBtn {
+    width: 200px;
+}
+
+.container .btn-container button {
+    background-color: var(--button-color);
+    border: 1px solid var(--button-border-color);
+    color: white;
+    font-weight: 500;
+    font-size: 16px;
+    border-radius: 10px;
+    width: 150px;
+    height: 30px;
+    cursor: pointer;
+}
+
+.container .settings {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    margin: 5px 10px;
+    border: 1px solid black;
+    border-radius: 10px;
+    height: 100px;
+    background-color: var(--background-light-color);
+}
+
+.container .settings.hidden{
+    display: none;
+    transition: display 5.0s;
+}
+
+.container .settings .reg-limits,.graph-title {
+    margin: 15px;
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.container .settings input {
+    border: 1px solid grey;
+    border-radius: 5px;
+    width: 250px;
+    padding-left: 10px;
+}
+
+.container .settings label {
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--font-color);
+}
+
+.container #settingBtn.pressed {
+    background-color: white;
+    color: var(--font-color);
+    padding-top: 3px;
+    font-weight: 800;
+}
+
+.container #reportBtn.pressed,#createChartBtn.pressed {
+    padding-top: 3px;
+}
+

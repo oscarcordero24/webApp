@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="../css/styles.css">
+</head>
+<body>
+    <header>
+        <div class="title">
+            <h1>Graph</h1>
+        </div>
+    </header>
+    <div class="container">
+        <div class="inputs-btn">
+            <div class="inputs">
+                <div class="name">
+                    <label class="label">Name</label>
+                    <input class="textbox" type="text" id="name-input" name="name" placeholder="Enter name" value="Sub-Casey Fork.Elev.Inst.~1Day.0.datman-rev">
+                </div>
+                <div class="office">
+                    <label class="label">Office</label>
+                    <input class="textbox" type="text" id="office-input" name="office" placeholder="Ex. MVS" value="MVS">
+                </div>
+                <div class="begin">
+                    <label class="label">Begin Date</label>
+                    <input class="textbox" type="text" id="begin-input" name="begin" placeholder="Ex. 2020-01-01 00:00:00.00" value="2020-01-01 01:46:23.964">
+                </div>
+                <div class="end">
+                    <label class="label">End Date</label>
+                    <input class="textbox" type="text" id="end-input" name="end" placeholder="Ex. 2020-12-31 23:59:59.99" value="2020-12-31 17:46:23.964">
+                </div>
+            </div>
+            <div class="btn-container">
+                <button id="createChartBtn">Create Chart</button>
+                <button id="reportBtn">Download Report</button>
+                <button id="settingBtn">Open Settings</button>
+            </div>
+        </div>
+        <div class="settings hidden" id="setting-div">
+            <div class="reg-limits">
+                <label id="regulation">Regulation Limits</label>
+                <input type="text" class="textbox" id="reg-input" placeholder="Ex. 420-430" value="406-412">
+            </div>
+            <div class="graph-title">
+                <label id="title">Title</label>
+                <input type="text" class="textbox" id="title-input" placeholder="Enter Graph Title" value="Test Graph">
+            </div>
+        </div>
+        <div class="chart-cont" id="chartContainer"></div>
+    </div>
+    
+    <script src="../js/index.js"></script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+</body>
+</html>
