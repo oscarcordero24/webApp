@@ -118,6 +118,8 @@ function processData(data) {
 
   let dataObj = data["time-series"]["time-series"][0]["irregular-interval-values"]["values"];
 
+  console.log(dataObj);
+
   // Get the date from the raw date data
   let rawDateList = getList(dataObj, 0);
   // Empty array to store the date
