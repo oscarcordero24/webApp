@@ -1,15 +1,63 @@
 
+
+import { fetchJsonFile } from './functions.js';
+
+// Fetch the datname data from json file url
+let namesJsonUrl = "https://wm.mvs.ds.usace.army.mil/php-data-api/public/json/gage_control.json"
+
 // Declare some const elements
-const nameTextBox = document.getElementById('name-input');
-const officeTextBox = document.getElementById('office-input');
-const beginTextBox = document.getElementById('begin-input');
-const endTextBox = document.getElementById('end-input');
-const regTextBox = document.getElementById('reg-input');
-const titelTextBox = document.getElementById('title-input');
-const createGraphBtn = document.getElementById('createChartBtn')
-const reportBtn = document.getElementById('reportBtn');
-const settingBtn = document.getElementById('settingBtn');
-const settingDiv = document.getElementById('setting-div');
+const nameTextBox = document.getElementById('name-input'),
+      officeTextBox = document.getElementById('office-input'),
+      beginTextBox = document.getElementById('begin-input'),
+      endTextBox = document.getElementById('end-input'),
+      regTextBox = document.getElementById('reg-input'),
+      titelTextBox = document.getElementById('title-input'),
+      createGraphBtn = document.getElementById('createChartBtn'),
+      reportBtn = document.getElementById('reportBtn'),
+      settingBtn = document.getElementById('settingBtn'),
+      settingDiv = document.getElementById('setting-div'),
+      comboBoxGage = document.getElementById('select-gage'),
+      comboBoxDatman = document.getElementById('select-datman'),
+      checkbox0_5 = document.getElementById('checkBoxNum1'),
+      checkbox1_0 = document.getElementById('checkBoxNum2'),
+      checkbox1_5 = document.getElementById('checkBoxNum3'),
+      checkbox2_0 = document.getElementById('checkBoxNum4');
+
+
+// Get combobox and populate it
+let optionsDictionary = {
+  "Gage #1" : ["Sub-Casey Fork.Elev.Inst.~1Day.0.datman-rev", "Option #2", "Option #3"],
+  "Gage #2" : ["Option #1", "Option #2", "Option #3"]
+}
+
+Object.keys(optionsDictionary).forEach((value) => {
+  let option = document.createElement('option');
+  option.value = value;
+  option.textContent = value;
+  comboBoxGage.appendChild(option);
+})
+
+optionsDictionary[comboBoxGage.value].forEach(value => {
+  let option = document.createElement('option');
+  option.value = formatString('name', value);
+  option.textContent = value;
+  comboBoxDatman.appendChild(option);
+});
+
+comboBoxGage.addEventListener('change', function() {
+  
+  while (comboBoxDatman.firstChild) {
+    comboBoxDatman.removeChild(comboBoxDatman.firstChild);
+  };
+
+  optionsDictionary[comboBoxGage.value].forEach(value => {
+    let option = document.createElement('option');
+    option.value = formatString('name', value);
+    option.textContent = value;
+    comboBoxDatman.appendChild(option);
+  });
+
+})
 
 // Declare some variables
 var nameValue;
@@ -29,7 +77,6 @@ function reportBtnClicked() {
 }
 
 function toggleSettingvisibility() {
-  console.log(settingDiv.classList)
   let haveHidden = false;
   settingDiv.classList.forEach((value) => {
     if (value == 'hidden') {
@@ -68,8 +115,11 @@ reportBtn.addEventListener('mouseup', function () {
 
 // ==== Main funtion to work with the data after getting the data =====
 function processData(data) {
+
+  let dataObj = data["time-series"]["time-series"][0]["irregular-interval-values"]["values"];
+
   // Get the date from the raw date data
-  let rawDateList = getList(data, 0);
+  let rawDateList = getList(dataObj, 0);
   // Empty array to store the date
   let dateList = [];
   // Loop to split the raw date and take just the part we want
@@ -77,7 +127,7 @@ function processData(data) {
     dateList[index] = value.split("T")[0]
   });
   // Get the stage data
-  let stageList = getList(data, 1);
+  let stageList = getList(dataObj, 1);
 
   // Set Upper and Lower Limits
   //Check if the reg text box have values
@@ -115,10 +165,10 @@ function processData(data) {
   let event2_0 = [];
 
   // Fill the empty arrays for each event
-  let event0_5List = getEvents(stageList=stageList, upperLimit=upperLimit, dateList=dateList, eventFt=elev0_5)
-  let event1_0List = getEvents(stageList=stageList, upperLimit=upperLimit, dateList=dateList, eventFt=elev1_0)
-  let event1_5List = getEvents(stageList=stageList, upperLimit=upperLimit, dateList=dateList, eventFt=elev1_5)
-  let event2_0List = getEvents(stageList=stageList, upperLimit=upperLimit, dateList=dateList, eventFt=elev2_0)
+  let event0_5List = getEvents(stageList, upperLimit, dateList, elev0_5);
+  let event1_0List = getEvents(stageList, upperLimit, dateList, elev1_0);
+  let event1_5List = getEvents(stageList, upperLimit, dateList, elev1_5);
+  let event2_0List = getEvents(stageList, upperLimit, dateList, elev2_0);
 
   // Get X and Y values for each event
   let xValues0_5 = event0_5List[1];
@@ -176,8 +226,19 @@ function processData(data) {
 
   reportBtn.removeEventListener('click', reportBtnClicked)
 
-  reportBtn.addEventListener('click', function() {
+  /* reportBtn.addEventListener('click', function() {
     createTableTextFile(tableRows, tableHeader, text, "Table_Test.txt")
+  }) */
+
+  // Make data for CSV file
+  let csvData = [];
+  csvData.push(tableHeader);
+  tableRows.forEach((row) => {
+    csvData.push(row)
+  })
+  
+  reportBtn.addEventListener('click', function() {
+    downloadCSV(csvData);
   })
 
 
@@ -189,6 +250,7 @@ function processData(data) {
 
   // Change the container properties in the CSS file
   var myDiv = document.getElementById('chartContainer');
+  myDiv.style.display = "block";
   myDiv.classList.add('active-cont');
 
   // Get Title from title textbox
@@ -199,10 +261,13 @@ function processData(data) {
     newTitle = "Graph Title";
   }
 
-  createChart(yAxisTitle="Stage[ft]", title=newTitle, xAxisArray=dateList, yAxisArray=stageList,
-    upperLimitSerie=upperList, lowerLimitSerie=lowerList, plot0_5=event0_5plot, plot1_0=event1_0plot, 
-    plot1_5=event1_5plot, plot2_0=event2_0plot
-  );
+  // Show event plot or not
+  let _0_5ft = (checkbox0_5.checked) ? event0_5plot : 0;
+  let _1_0ft = (checkbox1_0.checked) ? event1_0plot : 0;
+  let _1_5ft = (checkbox1_5.checked) ? event1_5plot : 0;
+  let _2_0ft = (checkbox2_0.checked) ? event2_0plot : 0;
+
+  createChart("Stage[ft]", newTitle, dateList, stageList, lowerList, upperList, _0_5ft, _1_0ft, _1_5ft, _2_0ft);
 
 }
 
@@ -317,79 +382,78 @@ function createChart(yAxisTitle, title, xAxisArray, yAxisArray, lowerLimitSerie,
       series: [
         {
           name: 'Stage',
-          data: yAxisArray
+          data: yAxisArray,
+          showInLegend: false,
+          marker: {enabled:false}
         },
         {
           name: 'Upper Limit ' + '[' + upperLimitSerie[0] + ' ft]',
           data: upperLimitSerie,
           dashStyle: 'Dash',
-          color: 'grey'
+          color: 'grey',
+          marker: {enabled:false}
         },
         {
           name: 'Lower Limit ' + '[' + lowerLimitSerie[0] + ' ft]',
           data: lowerLimitSerie,
           dashStyle: 'Dash',
-          color: 'grey'
+          color: 'grey',
+          marker: {enabled:false}
         },
         {
           name: '0.5 ft ' + '[' + plot0_5.length + "]",
           data: plot0_5,
-          color: "#277DA1"
+          color: "#277DA1",
+          showInLegend: (plot0_5 == 0) ? false : true,
+          marker: {enabled:false}
         },
         {
           name: '1.0 ft ' + '[' + plot1_0.length + "]",
           data: plot1_0,
-          color: '#F94144'
+          color: '#F94144',
+          showInLegend: (plot1_0 == 0) ? false : true,
+          marker: {enabled:false}
         },
         {
           name: '1.5 ft ' + '[' + plot1_5.length + "]",
           data: plot1_5,
-          color: '#43AA8B'
+          color: '#43AA8B',
+          showInLegend: (plot1_5 == 0) ? false : true,
+          marker: {enabled:false}
         },
         {
           name: '2.0 ft ' + '[' + plot2_0.length + "]",
           data: plot2_0,
-          color: '#F9844A'
+          color: '#F9844A',
+          showInLegend: (plot2_0 == 0) ? false : true,
+          marker: {enabled:false}
         }
       ]
   };
 
   // Create the chart
-  Highcharts.chart('chartContainer', data);
+  const highChart = Highcharts.chart('chartContainer', data);
 };
 
 // Fetch the JSON file from the URL
 createGraphBtn.addEventListener('click', function(){
   
   // Get all the values from the textbox
-  nameValue = formatString('name', nameTextBox.value);
+  nameValue = formatString('name', comboBoxDatman.value);
   officeValue = officeTextBox.value;
-  beginValue = formatString('date', beginTextBox.value);
-  endValue = formatString('date', endTextBox.value);
+  beginValue = formatString('start date', beginTextBox.value);
+  endValue = formatString('end date', endTextBox.value);
 
   url = createUrl()
   
   // https://coe-mvsuwa04mvs.mvs.usace.army.mil:8243/mvs-data/timeseries?name=Sub-Casey%20Fork.Elev.Inst.~1Day.0.datman-rev&office=MVS&begin=2020-06-08T01%3A46%3A23.964Z&end=2021-06-16T17%3A46%3A23.964Z&timezone=CST6CDT"
 
   if (nameValue && officeValue && beginValue && endValue){
-    fetch(url)
-  .then(response => {
-    if (!response.ok) {
-      throw new Error('Network response was not ok ' + response.statusText);
-    }
-    return response.json(); // Parse the JSON from the response
-  })
-  .then(data => {
-    let dataObj = data["time-series"]["time-series"][0]["irregular-interval-values"]["values"];
-    //alert(dataObj);
-    // Do something with the data
-    processData(dataObj);
-  })
-  .catch(error => {
-    // Handle any errors that occurred during the fetch
-    console.error('There has been a problem with your fetch operation:', error);
-    alert("There was a problem getting the Data.")
-  });
+
+    fetchJsonFile(url, processData, function(){
+      document.getElementById('chartContainer').style.display = "none";
+    });
+
   } else {
     alert("Enter values for each text box.")
   }
@@ -407,10 +471,13 @@ function formatString(textField, stringText) {
   if (textField == "name") {
     let output = stringText.replace(/ /g, '%20');
     return output
-  } else if (textField == "date") {
-    let output = stringText.replace(/:/g, '%3A');
-    output = output.replace(/ /g, "T")
-    return output + "Z"
+  } else if (textField === "start date" || textField === "end date") {
+    /* let holdList = stringText.split('/');
+    holdList = [holdList[2], holdList[0], holdList[1]];
+    let formattedDate = holdList.join('-'); */
+    let timeHour = (textField == "start date") ? "00%3A00%3A00.00Z" : "23%3A59%3A59.99Z";
+    let output = stringText + "T" + timeHour;
+    return output;
   }
 }
 
@@ -453,6 +520,28 @@ function createTableTextFile(data, headers, introText, filename) {
 
   // Revoke the Blob URL
   URL.revokeObjectURL(url);
+}
+
+// Create a csv file
+function downloadCSV(data) {
+  // Convert data to csv format
+  const csv = data.map(row => row.join(',')).join('\n');
+
+  // Create a Blob object
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+
+  // Create a link element
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.setAttribute('download', 'data.csv');
+  link.style.display = 'none';
+
+  // Append the link to the body and trigger the download
+  document.body.appendChild(link);
+  link.click();
+
+  // Cleanup
+  document.body.removeChild(link);
 }
 
 // Add each row to the column

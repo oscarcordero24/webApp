@@ -17,24 +17,67 @@
             <div class="inputs">
                 <div class="name">
                     <label class="label">Name</label>
-                    <input class="textbox" type="text" id="name-input" name="name" placeholder="Enter name" value="Sub-Casey Fork.Elev.Inst.~1Day.0.datman-rev">
+                    <!-- "Sub-Casey Fork.Elev.Inst.~1Day.0.datman-rev" -->
+                    <select name="gage" id="select-gage" class="combobox"></select>
                 </div>
                 <div class="office">
                     <label class="label">Office</label>
-                    <input class="textbox" type="text" id="office-input" name="office" placeholder="Ex. MVS" value="MVS">
+                    <input class="textbox" type="text" id="office-input" name="office" placeholder="Ex. MVS" value="MVS" disabled>
+                </div>
+                <div class="info-table">
+                    <table id="available-por">
+                        <thead>
+                            <tr>
+                                <th colspan="2">Available POR</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Start Time</td>
+                                <td>End Time</td>
+                            </tr>
+                            <tr>
+                                <td>MM/DD/YY</td>
+                                <td>MM/DD/YY</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
                 <div class="begin">
                     <label class="label">Begin Date</label>
-                    <input class="textbox" type="text" id="begin-input" name="begin" placeholder="Ex. 2020-01-01 00:00:00.00" value="2020-01-01 01:46:23.964">
+                    <!-- <input class="textbox" type="text" id="begin-input" name="begin" placeholder="Ex. MM/DD/YYYY" value="01/01/2020"> -->
+                    <input class="datepicker" type="date" id="begin-input" name="begin" value="2020-01-01">
                 </div>
                 <div class="end">
                     <label class="label">End Date</label>
-                    <input class="textbox" type="text" id="end-input" name="end" placeholder="Ex. 2020-12-31 23:59:59.99" value="2020-12-31 17:46:23.964">
+                    <!-- <input class="textbox" type="text" id="end-input" name="end" placeholder="Ex. MM/DD/YYYY" value="12/31/2020"> -->
+                    <input class="datepicker" type="date" id="end-input" name="end" value="2020-12-31">
+                </div>
+            </div>
+            <div class="lower-inputs">
+                <select name="name" id="select-datman" class="combobox"></select>
+                <div class="checkbox">
+                    <div id="checkbox-one">
+                        <label for="checkBoxOne">0.5ft</label>
+                        <input class="checkbox" type="checkbox" id="checkBoxNum1" name="event_0.5ft" checked>
+                    </div>
+                    <div id="checkbox-two">
+                        <label for="checkBoxOne">1.0ft</label>
+                        <input class="checkbox" type="checkbox" id="checkBoxNum2" name="event_0.5ft" checked>
+                    </div>
+                    <div id="checkbox-three">
+                        <label for="checkBoxOne">1.5ft</label>
+                        <input class="checkbox" type="checkbox" id="checkBoxNum3" name="event_0.5ft" checked>
+                    </div>
+                    <div id="checkbox-four">
+                        <label for="checkBoxOne">2.0ft</label>
+                        <input class="checkbox" type="checkbox" id="checkBoxNum4" name="event_0.5ft" checked>
+                    </div>
                 </div>
             </div>
             <div class="btn-container">
                 <button id="createChartBtn">Create Chart</button>
-                <button id="reportBtn">Download Report</button>
+                <button id="reportBtn">Download CSV</button>
                 <button id="settingBtn">Open Settings</button>
             </div>
         </div>
@@ -51,7 +94,13 @@
         <div class="chart-cont" id="chartContainer"></div>
     </div>
     
-    <script src="../js/index.js"></script>
-    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script type="module" src="../js/index.js"></script>
+    <script type="module" src="../js/functions.js"></script>
+    <script src="../js/highcharts.js"></script>
+    <script src="../js/exporting.js"></script>
+    <!-- For the API -->
+    <!-- <script src="https://code.highcharts.com/highcharts.js"></script> -->
+    <!-- <script src="https://code.highcharts.com/modules/exporting.js"></script> -->
+    <!-- <script src="https://code.highcharts.com/modules/export-data.js"></script> -->
 </body>
 </html>
